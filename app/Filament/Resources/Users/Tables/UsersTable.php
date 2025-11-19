@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Resources\Admins\Tables;
+namespace App\Filament\Resources\Users\Tables;
 
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
@@ -8,9 +8,8 @@ use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Illuminate\Support\Str;
 
-class AdminsTable
+class UsersTable
 {
     public static function configure(Table $table): Table
     {
@@ -19,24 +18,11 @@ class AdminsTable
                 TextColumn::make('name')
                     ->searchable(),
                 TextColumn::make('email')
+                    ->label('Email address')
                     ->searchable(),
-                TextColumn::make('roles.name')
-                    ->label('Roles')
-                    ->formatStateUsing(fn($state): string => Str::headline($state))
-                    ->searchable(),
-                TextColumn::make('status')
-                    ->formatStateUsing(fn($state): string => $state ? 'Enabled' : 'Disabled')
-                    ->badge()
-                    ->colors([
-                        'success' => fn($state) => $state === 1,
-                        'danger' => fn($state) => $state === 0
-                    ]),
-                TextColumn::make('phone')
-                    ->searchable(),
-                TextColumn::make('addresses.street')
-                    ->label('Address')
-                    ->searchable(),
-
+                TextColumn::make('email_verified_at')
+                    ->dateTime()
+                    ->sortable(),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
