@@ -1,0 +1,27 @@
+services:
+    meilisearch:
+        image: getmeili/meilisearch:latest
+        container_name: fila-meilisearch
+        restart: always
+        ports:
+            - "7700:7700"
+        environment:
+            MEILI_ENV: "development"  # Change from development to production
+            MEILI_NO_ANALYTICS: "true"  # Disable analytics (optional)
+            MEILI_MASTER_KEY: ${MEILISEARCH_KEY}  # Use a strong key in production
+            MEILI_LOG_LEVEL: "WARN"  # Reduce log verbosity
+        volumes:
+            - meili-data:/meili_data  # Persistent data storage
+
+    redis:
+        image: redis:latest
+        container_name: fila-redis
+        ports:
+            - "6379:6379"
+        volumes:
+            - redis-data:/data
+        restart: always
+
+volumes:
+    redis-data:
+    meili-data:

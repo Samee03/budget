@@ -1,18 +1,38 @@
 <?php
 
+use App\Helper\ApiResponse;
+use App\Http\Middleware\AlwaysAcceptJson;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Http\Exceptions\ThrottleRequestsException;
+use Illuminate\Validation\ValidationException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
-        web: __DIR__.'/../routes/web.php',
-        commands: __DIR__.'/../routes/console.php',
+        web: __DIR__ . '/../routes/web.php',
+        api: __DIR__ . '/../routes/api.php',
+        commands: __DIR__ . '/../routes/console.php',
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        $middleware->prepend(AlwaysAcceptJson::class);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        $exceptions->render(function (ValidationException $e) {
+            return ApiResponse::error(
+                $e->getMessage(),
+                422,
+                $e->errors()
+            );
+        })->renderable(function (NotFoundHttpException $e) {
+            $request = request();
+
+            if ($request->wantsJson()) {
+                return ApiResponse::error('Object not found', $e->getStatusCode());
+            }
+        })->renderable(function (ThrottleRequestsException $e) {
+            return ApiResponse::error($e->getMessage(), $e->getStatusCode());
+        });
     })->create();

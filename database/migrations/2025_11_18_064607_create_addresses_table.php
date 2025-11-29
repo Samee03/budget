@@ -31,6 +31,13 @@ return new class extends Migration
                 $table->string('full_address')->virtualAs("CONCAT(street, ', ', zip, ' ', city)");
             }
 
+            $table->string('type')->default('shipping'); // or 'billing'
+            // Optional fields
+            $table->boolean('is_default')->default(false); // helpful for UX
+            $table->text('notes')->nullable(); // delivery notes, buzzer info, etc.
+
+            $table->softDeletes();
+
             $table->timestamps();
         });
 
