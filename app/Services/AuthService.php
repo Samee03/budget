@@ -2,8 +2,8 @@
 
 namespace App\Services;
 
-use App\Helper\ApiResponse;
 use App\Models\User;
+use App\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
@@ -11,6 +11,7 @@ use Illuminate\Validation\ValidationException;
 
 class AuthService
 {
+    use ApiResponse;
     public function attemptLogin($email, $password, $remember): array
     {
         $user = User::where('email', $email)
@@ -50,7 +51,7 @@ class AuthService
         $user = User::find(auth()->user()->id);
 
         if (!$user) {
-            return ApiResponse::error('User not found', 404);
+            return $this->error('User not found', 404);
         }
 
         if (!Hash::check($current_password, $user->password)) {

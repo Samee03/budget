@@ -3,14 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\DTOs\AddressDTO;
-use App\Helper\ApiResponse;
 use App\Http\Requests\UpdateAddressRequest;
 use App\Http\Resources\AddressResource;
 use App\Models\Address;
 use App\Services\AddressService;
+use App\Traits\ApiResponse;
 
 class AddressController extends Controller
 {
+    use ApiResponse;
     public function __construct(private readonly AddressService $addressService)
     {
     }
@@ -19,12 +20,12 @@ class AddressController extends Controller
     {
         $addresses = auth()->user()->addresses;
 
-        return ApiResponse::success(AddressResource::collection($addresses));
+        return $this->success(AddressResource::collection($addresses));
     }
 
     public function show(Address $address)
     {
-        return ApiResponse::success(AddressResource::make($address));
+        return $this->success(AddressResource::make($address));
     }
 
     public function store(UpdateAddressRequest $request)
@@ -33,7 +34,7 @@ class AddressController extends Controller
 
         $address = $this->addressService->storeAddress($dto);
 
-        return ApiResponse::success(AddressResource::make($address), "Address created successfully.", 201);
+        return $this->success(AddressResource::make($address), "Address created successfully.", 201);
     }
 
     public function update(UpdateAddressRequest $request, Address $address)
@@ -42,13 +43,13 @@ class AddressController extends Controller
 
         $addresses = $this->addressService->updateAddress($dto, $address);
 
-        return ApiResponse::success(AddressResource::collection($addresses), "Address updated successfully");
+        return $this->success(AddressResource::collection($addresses), "Address updated successfully");
     }
 
     public function destroy(Address $address)
     {
         $address->delete();
 
-        return ApiResponse::success(null, "Address deleted successfully");
+        return $this->success(null, "Address deleted successfully");
     }
 }

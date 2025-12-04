@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Helper\ApiResponse;
 use App\Http\Requests\Auth\ChangePasswordRequest;
 use App\Http\Requests\Auth\ForgotPasswordRequest;
 use App\Http\Requests\Auth\LoginRequest;
@@ -10,10 +9,12 @@ use App\Http\Requests\Auth\RegisterRequest;
 use App\Http\Requests\Auth\ResetPasswordRequest;
 use App\Models\User;
 use App\Services\AuthService;
+use App\Traits\ApiResponse;
 use Illuminate\Http\Request;
 
 class AuthController extends Controller
 {
+    use ApiResponse;
     public function __construct(private readonly AuthService $authService)
     {
     }
@@ -28,7 +29,7 @@ class AuthController extends Controller
 
         $user = User::find($response['user']['id']);
 
-        return ApiResponse::success($response, 'Logged in successfully');
+        return $this->success($response, 'Logged in successfully');
     }
 
     public function register(RegisterRequest $request)
@@ -36,40 +37,40 @@ class AuthController extends Controller
         $user = $this->authService->register($request->validated());
 
         return $user
-            ? ApiResponse::success($user, 'User created successfully', 201)
+            ? $this->success($user, 'User created successfully', 201)
             : ApiResponse::error('Registration failed', 400);
     }
 
     public function getAuthUser(Request $request)
     {
-        return ApiResponse::success($request->user(), 'User authenticated');
+        return $this->success($request->user(), 'User authenticated');
     }
 
     public function changePassword(ChangePasswordRequest $request)
     {
         $this->authService->changePassword($request->password, $request->current_password);
 
-        return ApiResponse::success(null, 'Password changed successfully');
+        return $this->success(null, 'Password changed successfully');
     }
 
     public function resetPassword(ResetPasswordRequest $request)
     {
         $this->authService->resetPassword($request->validated());
 
-        return ApiResponse::success(null, 'Password reset successful');
+        return $this->success(null, 'Password reset successful');
     }
 
     public function forgotPassword(ForgotPasswordRequest $request)
     {
         $this->authService->sendResetLink($request->email);
 
-        return ApiResponse::success(null, 'Password reset link sent');
+        return $this->success(null, 'Password reset link sent');
     }
 
     public function logout(Request $request)
     {
         $request->user()->tokens()->delete();
 
-        return ApiResponse::success(null, 'Logged out successfully');
+        return $this->success(null, 'Logged out successfully');
     }
 }

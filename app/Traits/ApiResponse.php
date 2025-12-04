@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Helper;
+namespace App\Traits;
 
-class ApiResponse
+trait ApiResponse
 {
     public static function success($data = null, $message = 'Success', $status = 200)
     {

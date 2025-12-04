@@ -3,10 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\DTOs\UserDTO;
-use App\Helper\ApiResponse;
 use App\Http\Requests\UpdateUserProfileRequest;
 use App\Http\Resources\CustomerResource;
 use App\Services\ProfileService;
+use App\Traits\ApiResponse;
 
 class ProfileController extends Controller
 {

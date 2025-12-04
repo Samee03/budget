@@ -1,7 +1,7 @@
 <?php
 
-use App\Helper\ApiResponse;
 use App\Http\Middleware\AlwaysAcceptJson;
+use App\Support\ApiResponseFacade;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -21,7 +21,7 @@ return Application::configure(basePath: dirname(__DIR__))
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->render(function (ValidationException $e) {
-            return ApiResponse::error(
+            return ApiResponseFacade::error(
                 $e->getMessage(),
                 422,
                 $e->errors()
@@ -30,9 +30,9 @@ return Application::configure(basePath: dirname(__DIR__))
             $request = request();
 
             if ($request->wantsJson()) {
-                return ApiResponse::error('Object not found', $e->getStatusCode());
+                return ApiResponseFacade::error('Object not found', $e->getStatusCode());
             }
         })->renderable(function (ThrottleRequestsException $e) {
-            return ApiResponse::error($e->getMessage(), $e->getStatusCode());
+            return ApiResponseFacade::error($e->getMessage(), $e->getStatusCode());
         });
     })->create();
