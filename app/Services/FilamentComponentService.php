@@ -13,7 +13,6 @@ class FilamentComponentService
             ->multiple()
             ->imagePreviewHeight('150')
             ->maxSize(2000)
-            ->hiddenLabel()
-            ->extraAttributes(['style' => 'max-height:450px; overflow-y:auto;']);
+            ->hiddenLabel();
     }
 }
