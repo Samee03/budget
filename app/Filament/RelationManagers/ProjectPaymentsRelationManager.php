@@ -13,6 +13,7 @@ use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class ProjectPaymentsRelationManager extends RelationManager
 {
@@ -34,6 +35,11 @@ class ProjectPaymentsRelationManager extends RelationManager
                 ->options(['USD' => 'USD', 'PKR' => 'PKR'])
                 ->default(fn ($get) => $this->getOwnerRecord()?->currency ?? 'USD')
                 ->required(),
+            Select::make('account_id')
+                ->label('Account')
+                ->relationship('account', 'name', modifyQueryUsing: fn (Builder $query) => $query->orderBy('name'))
+                ->searchable()
+                ->preload(),
             TextInput::make('fx_rate_to_pkr')
                 ->numeric()
                 ->label('Rate to PKR')
@@ -87,6 +93,9 @@ class ProjectPaymentsRelationManager extends RelationManager
                     ->label('Amount'),
                 Tables\Columns\TextColumn::make('currency')
                     ->label('Currency'),
+                Tables\Columns\TextColumn::make('account.name')
+                    ->label('Account')
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('method')
                     ->label('Method'),
                 Tables\Columns\TextColumn::make('reference')

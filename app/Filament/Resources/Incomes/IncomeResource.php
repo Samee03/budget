@@ -36,6 +36,11 @@ class IncomeResource extends Resource
                 DatePicker::make('received_at')
                     ->default(now())
                     ->required(),
+                Select::make('account_id')
+                    ->relationship('account', 'name')
+                    ->label('Account')
+                    ->searchable()
+                    ->preload(),
                 TextInput::make('amount')
                     ->numeric()
                     ->required(),
@@ -111,6 +116,9 @@ class IncomeResource extends Resource
                 \Filament\Tables\Columns\TextColumn::make('source')
                     ->label('Source')
                     ->searchable(),
+                \Filament\Tables\Columns\TextColumn::make('account.name')
+                    ->label('Account')
+                    ->toggleable(isToggledHiddenByDefault: true),
                 \Filament\Tables\Columns\TextColumn::make('amount')
                     ->label('Amount')
                     ->formatStateUsing(fn ($state, $record) => ($record->currency ?? 'PKR') . ' ' . number_format((float) $state, 2)),

@@ -2,11 +2,13 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Model;
 
 class Income extends Model
 {
     protected $fillable = [
+        'account_id',
         'received_at',
         'amount',
         'currency',
@@ -30,4 +32,10 @@ class Income extends Model
         'fx_rate_to_pkr' => 'decimal:4',
         'amount_in_pkr' => 'decimal:2',
     ];
+
+    /** @return BelongsTo<Account, Income> */
+    public function account(): BelongsTo
+    {
+        return $this->belongsTo(Account::class);
+    }
 }

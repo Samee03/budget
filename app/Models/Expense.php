@@ -24,6 +24,7 @@ class Expense extends Model implements HasMedia
 
     protected $fillable = [
         'project_id',
+        'account_id',
         'spent_at',
         'amount',
         'currency',
@@ -49,6 +50,12 @@ class Expense extends Model implements HasMedia
     public function project(): BelongsTo
     {
         return $this->belongsTo(Project::class);
+    }
+
+    /** @return BelongsTo<Account, Expense> */
+    public function account(): BelongsTo
+    {
+        return $this->belongsTo(Account::class);
     }
 }
 

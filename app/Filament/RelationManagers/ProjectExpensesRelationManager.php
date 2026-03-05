@@ -14,6 +14,7 @@ use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class ProjectExpensesRelationManager extends RelationManager
 {
@@ -34,6 +35,11 @@ class ProjectExpensesRelationManager extends RelationManager
                 ->options(['USD' => 'USD', 'PKR' => 'PKR'])
                 ->default('USD')
                 ->required(),
+            Select::make('account_id')
+                ->label('Account')
+                ->relationship('account', 'name', modifyQueryUsing: fn (Builder $query) => $query->orderBy('name'))
+                ->searchable()
+                ->preload(),
             Select::make('category')
                 ->options([
                     'outsourcing' => 'Outsourcing / Contractors',
@@ -74,6 +80,9 @@ class ProjectExpensesRelationManager extends RelationManager
                     ->badge(),
                 Tables\Columns\TextColumn::make('payee_name')
                     ->label('Payee'),
+                Tables\Columns\TextColumn::make('account.name')
+                    ->label('Account')
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('amount')
                     ->formatStateUsing(fn ($state, $record) => ($record->currency ?? 'USD') . ' ' . number_format((float) $state, 2))
                     ->label('Amount'),

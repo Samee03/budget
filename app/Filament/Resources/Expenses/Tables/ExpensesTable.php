@@ -24,6 +24,9 @@ class ExpensesTable
                 TextColumn::make('project.name')
                     ->label('Project')
                     ->searchable(),
+                TextColumn::make('account.name')
+                    ->label('Account')
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('amount')
                     ->formatStateUsing(fn ($state, $record) => ($record->currency ?? 'USD') . ' ' . number_format((float) $state, 2))
                     ->label('Amount'),

@@ -32,7 +32,7 @@ class ExpenseForm
                                     ->required(),
                                 Select::make('currency')
                                     ->options(['USD' => 'USD', 'PKR' => 'PKR'])
-                                    ->default('USD')
+                                    ->default('PKR')
                                     ->required(),
                                 Select::make('category')
                                     ->options([
@@ -60,6 +60,11 @@ class ExpenseForm
                                         'other' => 'Other',
                                     ])
                                     ->searchable(),
+                                Select::make('account_id')
+                                    ->label('Account (optional)')
+                                    ->relationship('account', 'name')
+                                    ->searchable()
+                                    ->preload(),
                                 Select::make('project_id')
                                     ->label('Project (optional)')
                                     ->relationship('project', 'name', modifyQueryUsing: fn (Builder $query) => $query->orderBy('name'))

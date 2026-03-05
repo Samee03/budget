@@ -2,10 +2,11 @@
 
 namespace App\Filament\Widgets;
 
+use App\Models\Account;
 use App\Models\BudgetSetting;
 use App\Models\Expense;
-use App\Models\Project;
 use App\Models\Income;
+use App\Models\Project;
 use App\Models\ProjectPayment;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
@@ -65,7 +66,9 @@ class BudgetStatsOverview extends BaseWidget
 
         $periodNetPkr = $totalIncomePkr - $totalExpensesPkr;
 
-        $openingBalancePkr = BudgetSetting::openingBalanceInPkr();
+        $openingBalancePkr = Account::query()->get()->sum(
+            fn ($a) => BudgetSetting::toPkr((float) $a->opening_balance, $a->currency ?? 'PKR')
+        );
         $allTimePaymentIncomePkr = ProjectPayment::query()->get()->sum(
             fn ($p) => $p->amount_in_pkr !== null
                 ? (float) $p->amount_in_pkr
@@ -79,9 +82,6 @@ class BudgetStatsOverview extends BaseWidget
         $allTimeIncomePkr = $allTimePaymentIncomePkr + $allTimeOtherIncomePkr;
         $allTimeExpensesPkr = Expense::query()->get()->sum(fn ($e) => BudgetSetting::toPkr((float) $e->amount, $e->currency ?? 'USD'));
         $currentBalancePkr = $openingBalancePkr + $allTimeIncomePkr - $allTimeExpensesPkr;
-
-        $settings = BudgetSetting::instance();
-        $asOf = $settings->opening_balance_as_of_date?->format('M j, Y') ?? '—';
 
         $activeProjectsCount = Project::query()->where('status', 'active')->count();
         $ongoingProjectsCount = Project::query()
@@ -100,10 +100,10 @@ class BudgetStatsOverview extends BaseWidget
             Stat::make('Period net (PKR)', 'PKR ' . number_format($periodNetPkr, 0))
                 ->description($this->getDateRangeDescription())
                 ->color($periodNetPkr >= 0 ? 'success' : 'danger'),
-            Stat::make('Opening balance (PKR)', 'PKR ' . number_format($openingBalancePkr, 0))
-                ->description('As of ' . $asOf),
+            Stat::make('Opening balances (PKR)', 'PKR ' . number_format($openingBalancePkr, 0))
+                ->description('Sum of account openings'),
             Stat::make('Current balance (PKR)', 'PKR ' . number_format($currentBalancePkr, 0))
-                ->description('Opening + income − expenses'),
+                ->description('Account openings + income − expenses'),
             Stat::make('Active projects', (string) $activeProjectsCount)
                 ->description('Status = active'),
             Stat::make('Ongoing projects', (string) $ongoingProjectsCount)
