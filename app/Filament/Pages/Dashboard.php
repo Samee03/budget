@@ -16,13 +16,7 @@ class Dashboard extends BaseDashboard
     {
         return $schema
             ->components([
-                Section::make()
-                    ->schema([
-                        DatePicker::make('startDate'),
-                        DatePicker::make('endDate')
-                    ])
-                    ->columns(2)
-                    ->columnSpan(3),
+                //
             ]);
     }
 }

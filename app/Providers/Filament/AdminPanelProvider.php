@@ -4,12 +4,11 @@ namespace App\Providers\Filament;
 
 use App\Filament\Pages\Auth\Login;
 use App\Filament\Pages\Auth\PasswordReset\RequestPasswordReset;
+use App\Filament\Pages\Dashboard;
 use Filament\Http\Middleware\Authenticate;
-use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
-use App\Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
@@ -32,7 +31,6 @@ class AdminPanelProvider extends PanelProvider
             ->login(Login::class)
             ->passwordReset(RequestPasswordReset::class)
             ->authPasswordBroker('admins')
-            ->emailVerification()
             ->colors([
                 'primary' => Color::Rose,
             ])
@@ -46,6 +44,7 @@ class AdminPanelProvider extends PanelProvider
 //                AccountWidget::class,
 //                FilamentInfoWidget::class,
             ])
+            ->globalSearch(false)
             ->authGuard('admin')
             ->middleware([
                 EncryptCookies::class,
@@ -74,25 +73,25 @@ class AdminPanelProvider extends PanelProvider
                         directory: 'avatars', // image will be stored in 'storage/app/public/avatars
                         rules: 'mimes:jpeg,png|max:1024' //only accept jpeg and png files with a maximum size of 1MB
                     ),
-                FilamentShieldPlugin::make()
-                    ->navigationGroup('Admin Management')
-                    ->navigationLabel('Roles & Permissions')
-                    ->navigationSort(10)
-                    ->gridColumns([
-                        'default' => 1,
-                        'sm' => 2,
-                        'lg' => 2,
-                    ])
-                    ->sectionColumnSpan(1)
-                    ->checkboxListColumns([
-                        'default' => 1,
-                        'sm' => 2,
-                        'lg' => 3,
-                    ])
-                    ->resourceCheckboxListColumns([
-                        'default' => 1,
-                        'sm' => 2,
-                    ]),
+//                FilamentShieldPlugin::make()
+//                    ->navigationGroup('Admin Management')
+//                    ->navigationLabel('Roles & Permissions')
+//                    ->navigationSort(10)
+//                    ->gridColumns([
+//                        'default' => 1,
+//                        'sm' => 2,
+//                        'lg' => 2,
+//                    ])
+//                    ->sectionColumnSpan(1)
+//                    ->checkboxListColumns([
+//                        'default' => 1,
+//                        'sm' => 2,
+//                        'lg' => 3,
+//                    ])
+//                    ->resourceCheckboxListColumns([
+//                        'default' => 1,
+//                        'sm' => 2,
+//                    ]),
             ])
             ->authMiddleware([
                 Authenticate::class,

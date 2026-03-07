@@ -3,7 +3,15 @@
 use App\Http\Controllers\AddressController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Mobile\DashboardController as MobileDashboardController;
+use App\Http\Controllers\Mobile\AccountController as MobileAccountController;
+use App\Http\Controllers\Mobile\IncomeController as MobileIncomeController;
+use App\Http\Controllers\Mobile\ExpenseController as MobileExpenseController;
+use App\Http\Controllers\Mobile\ProjectController as MobileProjectController;
+use App\Http\Controllers\Mobile\ProjectPaymentController as MobileProjectPaymentController;
 use App\Models\User;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Route;
 
 Route::group(['middleware' => ['guest']], function () {
     Route::post('/login', [AuthController::class, 'login'])->name('login');
@@ -21,6 +29,26 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::put('/profile', [ProfileController::class, 'updateUser'])->name('update.profile');
 
     Route::apiResource('/addresses', AddressController::class);
+
+    Route::prefix('mobile')->group(function () {
+        // Dashboard snapshot (income, expenses, net, balances, accounts)
+        Route::get('/dashboard', [MobileDashboardController::class, 'show']);
+
+        // Accounts & balances
+        Route::get('/accounts', [MobileAccountController::class, 'index']);
+
+        // Incomes (salary + other income flows)
+        Route::get('/incomes', [MobileIncomeController::class, 'index']);
+        Route::post('/incomes', [MobileIncomeController::class, 'store']);
+
+        // Expenses (personal + project-linked)
+        Route::get('/expenses', [MobileExpenseController::class, 'index']);
+        Route::post('/expenses', [MobileExpenseController::class, 'store']);
+
+        // Projects and project payments (optional but handy in mobile)
+        Route::get('/projects', [MobileProjectController::class, 'index']);
+        Route::post('/projects/{project}/payments', [MobileProjectPaymentController::class, 'store']);
+    });
 });
 
 Route::group(['middleware' => ['auth:sanctum'], 'prefix' => 'admin', 'as' => 'admin'], function () {

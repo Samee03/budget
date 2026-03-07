@@ -2,4 +2,6 @@
 
 use Illuminate\Support\Facades\Route;
 
-Route::permanentRedirect('/', '/admin');
+Route::any('/', function () {
+    return redirect('/admin');
+});

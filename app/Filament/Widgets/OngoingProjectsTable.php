@@ -12,6 +12,8 @@ class OngoingProjectsTable extends BaseWidget
 {
     use InteractsWithPageFilters;
 
+    protected static ?int $sort = 3;
+
     protected int|string|array $columnSpan = 'full';
 
     public function table(Table $table): Table

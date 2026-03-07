@@ -21,6 +21,7 @@
         "laravel/scout": "^10.22",
         "laravel/tinker": "^2.10.1",
         "meilisearch/meilisearch-php": "^1.16",
+        "nativephp/mobile": "^3.0",
         "predis/predis": "^3.3",
         "squirephp/countries-en": "^3.10",
         "squirephp/currencies-en": "^3.10"
