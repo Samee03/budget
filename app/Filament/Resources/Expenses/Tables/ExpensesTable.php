@@ -17,8 +17,10 @@ class ExpensesTable
                     ->sortable(),
                 TextColumn::make('description')
                     ->searchable(),
-                TextColumn::make('category')
-                    ->badge(),
+                TextColumn::make('expenseCategory.name')
+                    ->label('Category')
+                    ->badge()
+                    ->sortable(),
                 TextColumn::make('payee_name')
                     ->label('Payee'),
                 TextColumn::make('project.name')
@@ -33,6 +35,7 @@ class ExpensesTable
                 TextColumn::make('currency')
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
+            ->defaultSort('created_at', 'desc')
             ->filters([
                 //
             ])

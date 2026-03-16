@@ -30,8 +30,8 @@ class IncomeController extends Controller
             $query->where('account_id', $request->query('account_id'));
         }
 
-        if ($request->filled('type')) {
-            $query->where('type', $request->query('type'));
+        if ($request->filled('income_type_id')) {
+            $query->where('income_type_id', $request->query('income_type_id'));
         }
 
         $perPage = (int) $request->query('per_page', 20);
@@ -49,7 +49,8 @@ class IncomeController extends Controller
                 'amount' => (float) $income->amount,
                 'currency' => $income->currency,
                 'amount_pkr' => $amountPkr,
-                'type' => $income->type,
+                'type' => $income->incomeType?->name,
+                'income_type_id' => $income->income_type_id,
                 'source' => $income->source,
                 'description' => $income->description,
                 'payment_method' => $income->payment_method,
@@ -76,7 +77,7 @@ class IncomeController extends Controller
             'amount' => ['required', 'numeric', 'min:0'],
             'currency' => ['required', Rule::in(['PKR', 'USD'])],
             'fx_rate_to_pkr' => ['nullable', 'numeric', 'min:0'],
-            'type' => ['required', 'string'],
+            'income_type_id' => ['required', 'integer', 'exists:income_types,id'],
             'source' => ['nullable', 'string', 'max:255'],
             'description' => ['nullable', 'string', 'max:1000'],
             'payment_method' => ['nullable', 'string', 'max:255'],
@@ -96,12 +97,12 @@ class IncomeController extends Controller
 
         $income = Income::create([
             'account_id' => $data['account_id'] ?? null,
+            'income_type_id' => $data['income_type_id'],
             'received_at' => $data['received_at'],
             'amount' => $amount,
             'currency' => $currency,
             'fx_rate_to_pkr' => $data['fx_rate_to_pkr'] ?? null,
             'amount_in_pkr' => $amountInPkr,
-            'type' => $data['type'],
             'source' => $data['source'] ?? null,
             'description' => $data['description'] ?? null,
             'payment_method' => $data['payment_method'] ?? null,

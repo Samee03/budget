@@ -34,17 +34,15 @@ class ExpenseForm
                                     ->options(['USD' => 'USD', 'PKR' => 'PKR'])
                                     ->default('PKR')
                                     ->required(),
-                                Select::make('category')
-                                    ->options([
-                                        'groceries' => 'Groceries',
-                                        'online_shopping' => 'Online shopping',
-                                        'atm_withdrawal' => 'ATM withdrawal',
-                                        'outsourcing' => 'Outsourcing / Contractors',
-                                        'tools' => 'Tools & Software',
-                                        'travel' => 'Travel',
-                                        'other' => 'Other',
-                                    ])
-                                    ->searchable(),
+                                Select::make('expense_category_id')
+                                    ->label('Category')
+                                    ->relationship('expenseCategory', 'name')
+                                    ->searchable()
+                                    ->preload()
+                                    ->createOptionForm([
+                                        \Filament\Forms\Components\TextInput::make('name')->required()->maxLength(255),
+                                        \Filament\Forms\Components\TextInput::make('slug')->maxLength(255)->helperText('Leave blank to auto-generate'),
+                                    ]),
                                 TextInput::make('payee_name')
                                     ->label('Payee')
                                     ->maxLength(255),

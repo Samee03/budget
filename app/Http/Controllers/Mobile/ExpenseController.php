@@ -34,8 +34,8 @@ class ExpenseController extends Controller
             $query->where('project_id', $request->query('project_id'));
         }
 
-        if ($request->filled('category')) {
-            $query->where('category', $request->query('category'));
+        if ($request->filled('expense_category_id')) {
+            $query->where('expense_category_id', $request->query('expense_category_id'));
         }
 
         $perPage = (int) $request->query('per_page', 20);
@@ -51,7 +51,8 @@ class ExpenseController extends Controller
                 'amount' => (float) $expense->amount,
                 'currency' => $expense->currency,
                 'amount_pkr' => $amountPkr,
-                'category' => $expense->category,
+                'category' => $expense->expenseCategory?->name,
+                'expense_category_id' => $expense->expense_category_id,
                 'payee_name' => $expense->payee_name,
                 'description' => $expense->description,
                 'payment_method' => $expense->payment_method,
@@ -79,7 +80,7 @@ class ExpenseController extends Controller
             'spent_at' => ['required', 'date'],
             'amount' => ['required', 'numeric', 'min:0'],
             'currency' => ['required', Rule::in(['PKR', 'USD'])],
-            'category' => ['nullable', 'string', 'max:255'],
+            'expense_category_id' => ['nullable', 'integer', 'exists:expense_categories,id'],
             'payee_name' => ['nullable', 'string', 'max:255'],
             'description' => ['required', 'string', 'max:1000'],
             'payment_method' => ['nullable', 'string', 'max:255'],
@@ -87,7 +88,17 @@ class ExpenseController extends Controller
             'account_id' => ['nullable', 'integer', 'exists:accounts,id'],
         ]);
 
-        $expense = Expense::create($data);
+        $expense = Expense::create([
+            'spent_at' => $data['spent_at'],
+            'amount' => $data['amount'],
+            'currency' => $data['currency'],
+            'expense_category_id' => $data['expense_category_id'] ?? null,
+            'payee_name' => $data['payee_name'] ?? null,
+            'description' => $data['description'],
+            'payment_method' => $data['payment_method'] ?? null,
+            'project_id' => $data['project_id'] ?? null,
+            'account_id' => $data['account_id'] ?? null,
+        ]);
 
         return self::success(['id' => $expense->id], 'Expense created', 201);
     }

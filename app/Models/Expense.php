@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\ExpenseCategory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Spatie\MediaLibrary\HasMedia;
@@ -25,10 +26,10 @@ class Expense extends Model implements HasMedia
     protected $fillable = [
         'project_id',
         'account_id',
+        'expense_category_id',
         'spent_at',
         'amount',
         'currency',
-        'category',
         'payee_name',
         'description',
         'payment_method',
@@ -56,6 +57,12 @@ class Expense extends Model implements HasMedia
     public function account(): BelongsTo
     {
         return $this->belongsTo(Account::class);
+    }
+
+    /** @return BelongsTo<ExpenseCategory, Expense> */
+    public function expenseCategory(): BelongsTo
+    {
+        return $this->belongsTo(ExpenseCategory::class, 'expense_category_id');
     }
 }
 

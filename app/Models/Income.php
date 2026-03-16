@@ -3,18 +3,19 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Models\IncomeType;
 use Illuminate\Database\Eloquent\Model;
 
 class Income extends Model
 {
     protected $fillable = [
         'account_id',
+        'income_type_id',
         'received_at',
         'amount',
         'currency',
         'fx_rate_to_pkr',
         'amount_in_pkr',
-        'type',
         'source',
         'description',
         'payment_method',
@@ -23,7 +24,6 @@ class Income extends Model
 
     protected $attributes = [
         'currency' => 'PKR',
-        'type' => 'other',
     ];
 
     protected $casts = [
@@ -37,5 +37,11 @@ class Income extends Model
     public function account(): BelongsTo
     {
         return $this->belongsTo(Account::class);
+    }
+
+    /** @return BelongsTo<IncomeType, Income> */
+    public function incomeType(): BelongsTo
+    {
+        return $this->belongsTo(IncomeType::class, 'income_type_id');
     }
 }

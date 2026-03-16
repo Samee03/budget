@@ -17,7 +17,7 @@ use UnitEnum;
 class BudgetSettings extends Page
 {
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-cog-6-tooth';
-    protected static string|UnitEnum|null $navigationGroup = 'Budgeting';
+    protected static string|UnitEnum|null $navigationGroup = 'Admin Management';
     protected static ?int $navigationSort = 10;
     protected static ?string $title = 'Budget Settings';
     protected static ?string $navigationLabel = 'Budget Settings';

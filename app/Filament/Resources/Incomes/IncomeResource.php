@@ -75,16 +75,17 @@ class IncomeResource extends Resource
 
                         return null;
                     }),
-                Select::make('type')
-                    ->options([
-                        'salary' => 'Salary',
-                        'freelance' => 'Freelance / Side project',
-                        'refund' => 'Refund',
-                        'gift' => 'Gift',
-                        'other' => 'Other',
-                    ])
-                    ->default('salary')
-                    ->required(),
+                Select::make('income_type_id')
+                    ->label('Type')
+                    ->relationship('incomeType', 'name')
+                    ->searchable()
+                    ->preload()
+                    ->required()
+                    ->default(fn () => \App\Models\IncomeType::where('slug', 'salary')->value('id'))
+                    ->createOptionForm([
+                        \Filament\Forms\Components\TextInput::make('name')->required()->maxLength(255),
+                        \Filament\Forms\Components\TextInput::make('slug')->maxLength(255)->helperText('Leave blank to auto-generate'),
+                    ]),
                 TextInput::make('source')
                     ->label('Source (employer / client)')
                     ->maxLength(255),
@@ -110,9 +111,10 @@ class IncomeResource extends Resource
                 \Filament\Tables\Columns\TextColumn::make('received_at')
                     ->date()
                     ->sortable(),
-                \Filament\Tables\Columns\TextColumn::make('type')
+                \Filament\Tables\Columns\TextColumn::make('incomeType.name')
                     ->badge()
-                    ->label('Type'),
+                    ->label('Type')
+                    ->sortable(),
                 \Filament\Tables\Columns\TextColumn::make('source')
                     ->label('Source')
                     ->searchable(),
@@ -129,6 +131,7 @@ class IncomeResource extends Resource
                     ->wrap()
                     ->searchable(),
             ])
+            ->defaultSort('created_at', 'desc')
             ->filters([
                 //
             ])

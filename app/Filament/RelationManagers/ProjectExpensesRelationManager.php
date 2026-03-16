@@ -40,14 +40,11 @@ class ProjectExpensesRelationManager extends RelationManager
                 ->relationship('account', 'name', modifyQueryUsing: fn (Builder $query) => $query->orderBy('name'))
                 ->searchable()
                 ->preload(),
-            Select::make('category')
-                ->options([
-                    'outsourcing' => 'Outsourcing / Contractors',
-                    'tools' => 'Tools & Software',
-                    'travel' => 'Travel',
-                    'other' => 'Other',
-                ])
-                ->searchable(),
+            Select::make('expense_category_id')
+                ->label('Category')
+                ->relationship('expenseCategory', 'name', modifyQueryUsing: fn (Builder $query) => $query->orderBy('name'))
+                ->searchable()
+                ->preload(),
             TextInput::make('payee_name')
                 ->label('Payee')
                 ->maxLength(255),
@@ -76,7 +73,8 @@ class ProjectExpensesRelationManager extends RelationManager
                     ->sortable(),
                 Tables\Columns\TextColumn::make('description')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('category')
+                Tables\Columns\TextColumn::make('expenseCategory.name')
+                    ->label('Category')
                     ->badge(),
                 Tables\Columns\TextColumn::make('payee_name')
                     ->label('Payee'),
