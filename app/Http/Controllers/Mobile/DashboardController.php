@@ -8,7 +8,6 @@ use App\Models\BudgetSetting;
 use App\Models\Expense;
 use App\Models\Income;
 use App\Models\Project;
-use App\Models\ProjectPayment;
 use App\Traits\ApiResponse;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -25,25 +24,15 @@ class DashboardController extends Controller
         $startDate = $start ? Carbon::parse($start)->startOfDay() : Carbon::now()->startOfMonth();
         $endDate = $end ? Carbon::parse($end)->endOfDay() : Carbon::now()->endOfDay();
 
-        // Project payments in period
-        $paymentIncomePkr = ProjectPayment::query()
-            ->whereBetween('received_at', [$startDate, $endDate])
-            ->get()
-            ->sum(fn (ProjectPayment $p) => $p->amount_in_pkr !== null
-                ? (float) $p->amount_in_pkr
-                : BudgetSetting::toPkr((float) $p->amount, $p->currency ?? 'USD')
-            );
-
-        // Other incomes in period
-        $otherIncomePkr = Income::query()
+        // All incomes in period (including project payments)
+        $incomePkr = Income::query()
             ->whereBetween('received_at', [$startDate, $endDate])
             ->get()
             ->sum(fn (Income $i) => $i->amount_in_pkr !== null
                 ? (float) $i->amount_in_pkr
                 : BudgetSetting::toPkr((float) $i->amount, $i->currency ?? 'PKR')
             );
-
-        $totalIncomePkr = $paymentIncomePkr + $otherIncomePkr;
+        $totalIncomePkr = $incomePkr;
 
         // Expenses in period
         $totalExpensesPkr = Expense::query()
@@ -59,12 +48,7 @@ class DashboardController extends Controller
         );
 
         // All-time income/expenses for current balance
-        $allTimePaymentIncomePkr = ProjectPayment::query()->get()->sum(
-            fn (ProjectPayment $p) => $p->amount_in_pkr !== null
-                ? (float) $p->amount_in_pkr
-                : BudgetSetting::toPkr((float) $p->amount, $p->currency ?? 'USD')
-        );
-        $allTimeOtherIncomePkr = Income::query()->get()->sum(
+        $allTimeIncomePkr = Income::query()->get()->sum(
             fn (Income $i) => $i->amount_in_pkr !== null
                 ? (float) $i->amount_in_pkr
                 : BudgetSetting::toPkr((float) $i->amount, $i->currency ?? 'PKR')
@@ -73,7 +57,7 @@ class DashboardController extends Controller
             fn (Expense $e) => BudgetSetting::toPkr((float) $e->amount, $e->currency ?? 'PKR')
         );
 
-        $currentBalancePkr = $openingBalancePkr + $allTimePaymentIncomePkr + $allTimeOtherIncomePkr - $allTimeExpensesPkr;
+        $currentBalancePkr = $openingBalancePkr + $allTimeIncomePkr - $allTimeExpensesPkr;
 
         $accounts = Account::query()
             ->orderBy('name')

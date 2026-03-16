@@ -36,12 +36,6 @@ class Account extends Model
         return $this->hasMany(Expense::class);
     }
 
-    /** @return HasMany<ProjectPayment> */
-    public function projectPayments(): HasMany
-    {
-        return $this->hasMany(ProjectPayment::class);
-    }
-
     public function getCurrentBalancePkrAttribute(): float
     {
         $opening = BudgetSetting::toPkr((float) $this->opening_balance, $this->currency ?? 'PKR');
@@ -52,16 +46,10 @@ class Account extends Model
                 : BudgetSetting::toPkr((float) $i->amount, $i->currency ?? 'PKR')
         );
 
-        $paymentPkr = $this->projectPayments()->get()->sum(
-            fn ($p) => $p->amount_in_pkr !== null
-                ? (float) $p->amount_in_pkr
-                : BudgetSetting::toPkr((float) $p->amount, $p->currency ?? 'PKR')
-        );
-
         $expensePkr = $this->expenses()->get()->sum(
             fn ($e) => BudgetSetting::toPkr((float) $e->amount, $e->currency ?? 'PKR')
         );
 
-        return $opening + $incomePkr + $paymentPkr - $expensePkr;
+        return $opening + $incomePkr - $expensePkr;
     }
 }

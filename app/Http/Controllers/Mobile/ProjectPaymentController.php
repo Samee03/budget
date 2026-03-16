@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Mobile;
 
 use App\Http\Controllers\Controller;
+use App\Models\Income;
 use App\Models\Project;
-use App\Models\ProjectPayment;
 use App\Traits\ApiResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -37,7 +37,7 @@ class ProjectPaymentController extends Controller
             $amountInPkr = $amount * $rate;
         }
 
-        $payment = ProjectPayment::create([
+        $income = Income::query()->create([
             'project_id' => $project->id,
             'account_id' => $data['account_id'] ?? null,
             'received_at' => $data['received_at'],
@@ -45,12 +45,14 @@ class ProjectPaymentController extends Controller
             'currency' => $currency,
             'fx_rate_to_pkr' => $data['fx_rate_to_pkr'] ?? null,
             'amount_in_pkr' => $amountInPkr,
-            'method' => $data['method'] ?? null,
-            'reference' => $data['reference'] ?? null,
+            'payment_method' => $data['method'] ?? null,
+            'payment_reference' => $data['reference'] ?? null,
             'notes' => $data['notes'] ?? null,
+            'income_kind' => 'project_payment',
+            'source' => $project->name,
         ]);
 
-        return self::success(['id' => $payment->id], 'Project payment created', 201);
+        return self::success(['id' => $income->id], 'Project payment created', 201);
     }
 }
 

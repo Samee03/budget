@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use App\Models\Expense;
-use App\Models\ProjectPayment;
+use App\Models\Income;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -41,10 +41,11 @@ class Project extends Model
         return $this->belongsTo(User::class, 'client_id');
     }
 
-    /** @return HasMany<ProjectPayment> */
+    /** @return HasMany<Income> */
     public function payments(): HasMany
     {
-        return $this->hasMany(ProjectPayment::class);
+        return $this->hasMany(Income::class)
+            ->where('income_kind', 'project_payment');
     }
 
     /** @return HasMany<Expense> */

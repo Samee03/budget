@@ -5,7 +5,6 @@ namespace App\Filament\Widgets;
 use App\Models\BudgetSetting;
 use App\Models\Expense;
 use App\Models\Income;
-use App\Models\ProjectPayment;
 use Filament\Widgets\ChartWidget;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Illuminate\Support\Carbon;
@@ -40,21 +39,14 @@ class IncomeVsExpensesChart extends ChartWidget
             $monthStart = $current->copy()->startOfMonth();
             $monthEnd = $current->copy()->endOfMonth();
 
-            $paymentPkr = ProjectPayment::query()
-                ->whereDate('received_at', '>=', $monthStart)
-                ->whereDate('received_at', '<=', $monthEnd)
-                ->get()
-                ->sum(fn ($p) => $p->amount_in_pkr !== null
-                    ? (float) $p->amount_in_pkr
-                    : BudgetSetting::toPkr((float) $p->amount, $p->currency ?? 'USD'));
-            $otherIncomePkr = Income::query()
+            $incomePkr = Income::query()
                 ->whereDate('received_at', '>=', $monthStart)
                 ->whereDate('received_at', '<=', $monthEnd)
                 ->get()
                 ->sum(fn ($i) => $i->amount_in_pkr !== null
                     ? (float) $i->amount_in_pkr
                     : BudgetSetting::toPkr((float) $i->amount, $i->currency ?? 'PKR'));
-            $incomeData[] = round($paymentPkr + $otherIncomePkr, 0);
+            $incomeData[] = round($incomePkr, 0);
 
             $expensePkr = Expense::query()
                 ->whereDate('spent_at', '>=', $monthStart)

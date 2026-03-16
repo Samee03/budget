@@ -35,6 +35,8 @@ class ExpensesTable
                 TextColumn::make('currency')
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
+            ->defaultPaginationPageOption(50)
+            ->paginated([10, 25, 50, 100, 'all'])
             ->defaultSort('created_at', 'desc')
             ->filters([
                 //

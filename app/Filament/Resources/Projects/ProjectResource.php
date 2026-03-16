@@ -9,7 +9,7 @@ use App\Filament\Resources\Projects\Pages\ViewProject;
 use App\Filament\Resources\Projects\Schemas\ProjectForm;
 use App\Filament\Resources\Projects\Tables\ProjectsTable;
 use App\Filament\RelationManagers\ProjectExpensesRelationManager;
-use App\Filament\RelationManagers\ProjectPaymentsRelationManager;
+use App\Filament\RelationManagers\ProjectIncomesRelationManager;
 use App\Models\Project;
 use BackedEnum;
 use Filament\Resources\Resource;
@@ -43,7 +43,7 @@ class ProjectResource extends Resource
     public static function getRelations(): array
     {
         return [
-            ProjectPaymentsRelationManager::class,
+            ProjectIncomesRelationManager::class,
             ProjectExpensesRelationManager::class,
         ];
     }

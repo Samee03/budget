@@ -10,6 +10,7 @@ class Income extends Model
 {
     protected $fillable = [
         'account_id',
+        'project_id',
         'income_type_id',
         'received_at',
         'amount',
@@ -19,6 +20,8 @@ class Income extends Model
         'source',
         'description',
         'payment_method',
+        'payment_reference',
+        'income_kind',
         'notes',
     ];
 
@@ -37,6 +40,12 @@ class Income extends Model
     public function account(): BelongsTo
     {
         return $this->belongsTo(Account::class);
+    }
+
+    /** @return BelongsTo<Project, Income> */
+    public function project(): BelongsTo
+    {
+        return $this->belongsTo(Project::class);
     }
 
     /** @return BelongsTo<IncomeType, Income> */

@@ -37,7 +37,8 @@ class ProjectsTable
                 TextColumn::make('end_date')
                     ->date()
                     ->toggleable(isToggledHiddenByDefault: true),
-                BadgeColumn::make('status')
+                TextColumn::make('status')
+                    ->badge()
                     ->colors([
                         'secondary' => 'draft',
                         'success' => 'active',

@@ -86,6 +86,20 @@ class IncomeResource extends Resource
                         \Filament\Forms\Components\TextInput::make('name')->required()->maxLength(255),
                         \Filament\Forms\Components\TextInput::make('slug')->maxLength(255)->helperText('Leave blank to auto-generate'),
                     ]),
+                Select::make('project_id')
+                    ->label('Project (for project payments)')
+                    ->relationship('project', 'name')
+                    ->searchable()
+                    ->preload()
+                    ->visible(fn ($get) => ($get('income_kind') ?? 'other') === 'project_payment'),
+                Select::make('income_kind')
+                    ->label('Income kind')
+                    ->options([
+                        'other' => 'Other income',
+                        'salary' => 'Salary',
+                        'project_payment' => 'Project payment',
+                    ])
+                    ->default('other'),
                 TextInput::make('source')
                     ->label('Source (employer / client)')
                     ->maxLength(255),
@@ -99,6 +113,9 @@ class IncomeResource extends Resource
                         'wallet' => 'Wallet',
                         'other' => 'Other',
                     ]),
+                TextInput::make('payment_reference')
+                    ->label('Payment reference')
+                    ->maxLength(255),
                 Textarea::make('notes')
                     ->rows(2),
             ]);
@@ -111,10 +128,17 @@ class IncomeResource extends Resource
                 \Filament\Tables\Columns\TextColumn::make('received_at')
                     ->date()
                     ->sortable(),
+                \Filament\Tables\Columns\TextColumn::make('income_kind')
+                    ->badge()
+                    ->label('Kind')
+                    ->sortable(),
                 \Filament\Tables\Columns\TextColumn::make('incomeType.name')
                     ->badge()
                     ->label('Type')
                     ->sortable(),
+                \Filament\Tables\Columns\TextColumn::make('project.name')
+                    ->label('Project')
+                    ->toggleable(isToggledHiddenByDefault: true),
                 \Filament\Tables\Columns\TextColumn::make('source')
                     ->label('Source')
                     ->searchable(),
@@ -132,6 +156,8 @@ class IncomeResource extends Resource
                     ->searchable(),
             ])
             ->defaultSort('created_at', 'desc')
+            ->defaultPaginationPageOption(50)
+            ->paginated([10, 25, 50, 100, 'all'])
             ->filters([
                 //
             ])

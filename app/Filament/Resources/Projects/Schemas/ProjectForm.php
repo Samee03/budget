@@ -37,7 +37,6 @@ class ProjectForm
                                     ->rows(3),
                                 TextInput::make('total_amount')
                                     ->numeric()
-                                    ->prefix(fn ($get): string => $get('currency') ?? 'PKR')
                                     ->required(),
                                 Select::make('currency')
                                     ->options([
