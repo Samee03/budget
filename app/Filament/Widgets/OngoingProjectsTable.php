@@ -5,26 +5,16 @@ namespace App\Filament\Widgets;
 use App\Models\Project;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Filament\Widgets\TableWidget as BaseWidget;
 
 class OngoingProjectsTable extends BaseWidget
 {
-    use InteractsWithPageFilters;
-
-    protected static ?int $sort = 3;
-
-    protected int|string|array $columnSpan = 'full';
+    protected static ?int $sort = 4;
 
     public function table(Table $table): Table
     {
-        $startDate = $this->filters['startDate'] ?? null;
-        $endDate = $this->filters['endDate'] ?? null;
-
         $query = Project::query()
             ->where('status', 'active')
-            ->when($startDate, fn ($q) => $q->whereDate('start_date', '>=', $startDate))
-            ->when($endDate, fn ($q) => $q->whereDate('start_date', '<=', $endDate))
             ->orderByDesc('start_date');
 
         return $table

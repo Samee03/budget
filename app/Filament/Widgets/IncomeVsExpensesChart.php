@@ -6,14 +6,11 @@ use App\Models\BudgetSetting;
 use App\Models\Expense;
 use App\Models\Income;
 use Filament\Widgets\ChartWidget;
-use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Illuminate\Support\Carbon;
 
 class IncomeVsExpensesChart extends ChartWidget
 {
-    use InteractsWithPageFilters;
-
-    protected static ?int $sort = 2;
+    protected static ?int $sort = 3;
 
     protected ?string $heading = 'Income vs Expenses (PKR)';
 
@@ -21,13 +18,9 @@ class IncomeVsExpensesChart extends ChartWidget
 
     protected function getData(): array
     {
-        $startDate = isset($this->filters['startDate']) && $this->filters['startDate']
-            ? Carbon::parse($this->filters['startDate'])->startOfMonth()
-            : now()->subMonths(11)->startOfMonth();
-
-        $endDate = isset($this->filters['endDate']) && $this->filters['endDate']
-            ? Carbon::parse($this->filters['endDate'])->endOfMonth()
-            : now()->endOfMonth();
+        // Keep this chart independent of the dashboard range selector.
+        $startDate = now()->subMonths(11)->startOfMonth();
+        $endDate = now()->endOfMonth();
 
         $labels = [];
         $incomeData = [];
